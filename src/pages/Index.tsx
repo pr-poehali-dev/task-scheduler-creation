@@ -13,7 +13,6 @@ interface Task {
   type: string;
   time: string;
   title: string;
-  room: string;
 }
 
 const initialTasks: Task[] = [
@@ -22,21 +21,18 @@ const initialTasks: Task[] = [
     type: 'Пр',
     time: '09:00 - 10:20',
     title: 'Физическая культура и спорт',
-    room: '5101',
   },
   {
     id: 2,
     type: 'Лаб',
     time: '10:30 - 11:50',
     title: 'Основы программирования',
-    room: '4340',
   },
   {
     id: 3,
     type: 'Лаб',
     time: '12:00 - 13:20',
     title: 'Основы программирования',
-    room: '4340',
   },
 ];
 
@@ -59,13 +55,12 @@ const Index = () => {
     type: '',
     time: '',
     title: '',
-    room: '',
   });
 
   const handleAddTask = () => {
-    if (newTask.title && newTask.time && newTask.type && newTask.room) {
+    if (newTask.title && newTask.time && newTask.type) {
       setTasks([...tasks, { ...newTask, id: tasks.length + 1 }]);
-      setNewTask({ type: '', time: '', title: '', room: '' });
+      setNewTask({ type: '', time: '', title: '' });
       setIsDialogOpen(false);
     }
   };
@@ -127,16 +122,7 @@ const Index = () => {
                         className="bg-background border-border"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="room">Аудитория</Label>
-                      <Input
-                        id="room"
-                        value={newTask.room}
-                        onChange={(e) => setNewTask({ ...newTask, room: e.target.value })}
-                        placeholder="4340"
-                        className="bg-background border-border"
-                      />
-                    </div>
+
                     <Button onClick={handleAddTask} className="w-full">
                       Добавить
                     </Button>
@@ -179,22 +165,21 @@ const Index = () => {
             >
               <div className="flex items-start gap-3">
                 <div className="flex flex-col items-center gap-1">
+                  <Badge variant="secondary" className="text-xs px-2 mb-1">
+                    {task.type}
+                  </Badge>
                   <div className="w-8 h-8 rounded-full bg-background flex items-center justify-center text-sm font-semibold">
                     {index + 1}
                   </div>
-                  <Badge variant="secondary" className="text-xs px-2">
-                    {task.type}
-                  </Badge>
                 </div>
 
                 <div className="flex-1">
-                  <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center justify-between">
                     <h3 className="font-semibold text-foreground">{task.title}</h3>
                     <span className="text-xs px-3 py-1 bg-background rounded-full text-muted-foreground">
                       {task.time}
                     </span>
                   </div>
-                  <p className="text-sm text-muted-foreground">Аудитория: {task.room}</p>
                 </div>
               </div>
             </Card>
