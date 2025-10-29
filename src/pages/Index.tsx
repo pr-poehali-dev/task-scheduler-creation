@@ -2,40 +2,41 @@ import { useState } from 'react';
 import Icon from '@/components/ui/icon';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface Task {
   id: number;
-  day: string;
+  type: string;
   time: string;
   title: string;
-  teacher: string;
   room: string;
 }
 
-const mockTasks: Task[] = [
+const initialTasks: Task[] = [
   {
     id: 1,
-    day: 'Пн',
+    type: 'Пр',
     time: '09:00 - 10:20',
     title: 'Физическая культура и спорт',
-    teacher: 'Преподаватель ФВ',
-    room: 'Аудитория: 5101',
+    room: '5101',
   },
   {
     id: 2,
-    day: 'Лаб',
+    type: 'Лаб',
     time: '10:30 - 11:50',
     title: 'Основы программирования',
-    teacher: 'Куликова Юлия Руслановна',
-    room: 'Аудитория: 4340',
+    room: '4340',
   },
   {
     id: 3,
-    day: 'Лаб',
+    type: 'Лаб',
     time: '12:00 - 13:20',
     title: 'Основы программирования',
-    teacher: 'Куликова Юлия Руслановна',
-    room: 'Аудитория: 4340',
+    room: '4340',
   },
 ];
 
@@ -52,6 +53,22 @@ const weekDays = [
 const Index = () => {
   const [activeTab, setActiveTab] = useState('calendar');
   const [selectedDate, setSelectedDate] = useState(28);
+  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [newTask, setNewTask] = useState({
+    type: '',
+    time: '',
+    title: '',
+    room: '',
+  });
+
+  const handleAddTask = () => {
+    if (newTask.title && newTask.time && newTask.type && newTask.room) {
+      setTasks([...tasks, { ...newTask, id: tasks.length + 1 }]);
+      setNewTask({ type: '', time: '', title: '', room: '' });
+      setIsDialogOpen(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -66,9 +83,66 @@ const Index = () => {
               <button className="p-2 hover:bg-secondary/50 rounded-lg transition-colors">
                 <Icon name="RefreshCw" size={20} className="text-muted-foreground" />
               </button>
-              <button className="p-2 hover:bg-secondary/50 rounded-lg transition-colors">
-                <Icon name="Calendar" size={20} className="text-muted-foreground" />
-              </button>
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <button className="p-2 hover:bg-primary/20 rounded-lg transition-colors">
+                    <Icon name="Plus" size={20} className="text-primary" />
+                  </button>
+                </DialogTrigger>
+                <DialogContent className="bg-card border-border">
+                  <DialogHeader>
+                    <DialogTitle className="text-foreground">Добавить задачу</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4 py-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="title">Название</Label>
+                      <Input
+                        id="title"
+                        value={newTask.title}
+                        onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+                        placeholder="Название занятия"
+                        className="bg-background border-border"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="type">Тип занятия</Label>
+                      <Select value={newTask.type} onValueChange={(value) => setNewTask({ ...newTask, type: value })}>
+                        <SelectTrigger className="bg-background border-border">
+                          <SelectValue placeholder="Выберите тип" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-card border-border">
+                          <SelectItem value="Лек">Лекция</SelectItem>
+                          <SelectItem value="Пр">Практика</SelectItem>
+                          <SelectItem value="Лаб">Лабораторная</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="time">Время</Label>
+                      <Input
+                        id="time"
+                        value={newTask.time}
+                        onChange={(e) => setNewTask({ ...newTask, time: e.target.value })}
+                        placeholder="09:00 - 10:20"
+                        className="bg-background border-border"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="room">Аудитория</Label>
+                      <Input
+                        id="room"
+                        value={newTask.room}
+                        onChange={(e) => setNewTask({ ...newTask, room: e.target.value })}
+                        placeholder="4340"
+                        className="bg-background border-border"
+                      />
+                    </div>
+                    <Button onClick={handleAddTask} className="w-full">
+                      Добавить
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
 
@@ -97,19 +171,19 @@ const Index = () => {
         </div>
 
         <div className="px-4 space-y-3">
-          {mockTasks.map((task, index) => (
+          {tasks.map((task, index) => (
             <Card
               key={task.id}
               className="bg-card border-border p-4 hover:bg-secondary/30 transition-all cursor-pointer animate-fade-in"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               <div className="flex items-start gap-3">
-                <div className="flex flex-col items-center">
+                <div className="flex flex-col items-center gap-1">
                   <div className="w-8 h-8 rounded-full bg-background flex items-center justify-center text-sm font-semibold">
                     {index + 1}
                   </div>
-                  <Badge variant="secondary" className="mt-2 text-xs">
-                    {task.day}
+                  <Badge variant="secondary" className="text-xs px-2">
+                    {task.type}
                   </Badge>
                 </div>
 
@@ -120,8 +194,7 @@ const Index = () => {
                       {task.time}
                     </span>
                   </div>
-                  <p className="text-sm text-muted-foreground mb-1">{task.teacher}</p>
-                  <p className="text-sm text-muted-foreground">{task.room}</p>
+                  <p className="text-sm text-muted-foreground">Аудитория: {task.room}</p>
                 </div>
               </div>
             </Card>
